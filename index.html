@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-stone-950">
+<html lang="en" class="h-full w-full bg-stone-950 overflow-x-hidden">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feng Shui Multi-Reward Lucky Draw - 50 Winners/Spin</title>
+    <title>Feng Shui Multi-Reward Lucky Draw - Full Screen</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -53,16 +54,19 @@
     <style>
         /* Custom Feng Shui Red & Gold Scrollbar */
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
         }
+
         ::-webkit-scrollbar-track {
             background: #1c1917;
         }
+
         ::-webkit-scrollbar-thumb {
             background: #78350f;
             border-radius: 4px;
         }
+
         ::-webkit-scrollbar-thumb:hover {
             background: #b45309;
         }
@@ -81,16 +85,10 @@
         }
 
         .glass-red {
-            background: rgba(63, 12, 12, 0.75);
+            background: rgba(63, 12, 12, 0.85);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(234, 179, 8, 0.25);
-        }
-
-        .gold-gradient-text {
-            background: linear-gradient(135deg, #fffbeb 0%, #fde047 40%, #ca8a04 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
         }
 
         .winner-card {
@@ -98,261 +96,368 @@
         }
 
         @keyframes popIn {
-            0% { opacity: 0; transform: scale(0.8) translateY(12px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
-        }
+            0% {
+                opacity: 0;
+                transform: scale(0.8) translateY(12px);
+            }
 
-        /* Lattice Frame Border Styling */
-        .lattice-corner {
-            position: absolute;
-            width: 16px;
-            height: 16px;
-            border-color: #facc15;
-            pointer-events: none;
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
         }
     </style>
 </head>
-<body class="h-full text-stone-100 font-sans antialiased fengshui-bg">
+
+<body
+    class="min-h-screen w-full text-stone-100 font-sans antialiased fengshui-bg flex flex-col p-3 sm:p-5 lg:p-6 space-y-4">
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed top-5 right-5 z-50 transform translate-y-[-100px] opacity-0 transition-all duration-300 ease-out flex items-center gap-3 bg-stone-900 text-stone-100 px-5 py-3 rounded-2xl border border-amber-500/40 shadow-2xl">
+    <div id="toast"
+        class="fixed top-5 right-5 z-50 transform translate-y-[-100px] opacity-0 transition-all duration-300 ease-out flex items-center gap-3 bg-stone-900 text-stone-100 px-5 py-3 rounded-2xl border border-amber-500/40 shadow-2xl">
         <i id="toast-icon" data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
         <span id="toast-message" class="text-sm font-medium">Notification</span>
     </div>
 
-    <!-- Main Container -->
-    <div class="min-h-screen flex flex-col justify-between p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+    <!-- Top Navigation Bar -->
+    <nav
+        class="glass-red rounded-2xl p-3 sm:p-4 border border-amber-500/30 flex flex-wrap items-center justify-between gap-3 shadow-xl shrink-0 w-full">
+        <div class="flex items-center gap-2 overflow-x-auto py-1 max-w-full" id="reward-pills-container">
+            <!-- Reward Pills injected by JS -->
+        </div>
 
-        <!-- Header with Feng Shui Motif -->
-        <header class="relative glass-red rounded-3xl p-6 border border-amber-500/30 flex flex-col md:flex-row items-center justify-between gap-4 shadow-2xl overflow-hidden">
-            <!-- Background Glow -->
-            <div class="absolute -top-10 -left-10 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="flex items-center gap-2 ml-auto flex-wrap">
+            <button onclick="prevRewardTier()"
+                class="px-3 py-2 bg-stone-900 hover:bg-stone-800 border border-amber-500/30 rounded-xl text-xs font-semibold text-amber-300 flex items-center gap-1 transition-colors">
+                <i data-lucide="chevron-left" class="w-4 h-4"></i> Prev Tier
+            </button>
+            <button onclick="nextRewardTier()"
+                class="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-bold rounded-xl text-xs flex items-center gap-1 shadow-lg transition-transform active:scale-95">
+                Next Tier <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+            <!-- Browser Full Screen Toggle Button -->
+            <button id="fullscreen-btn" onclick="toggleFullScreen()"
+                class="px-4 py-2 bg-stone-900 hover:bg-amber-500 hover:text-stone-950 border border-amber-500/50 rounded-xl text-xs font-bold text-amber-300 flex items-center gap-2 transition-all shadow-md active:scale-95">
+                <i id="fullscreen-icon" data-lucide="maximize" class="w-4 h-4"></i>
+                <span id="fullscreen-text">Full Screen</span>
+            </button>
+        </div>
+    </nav>
 
-            <!-- Title & Motif -->
-            <div class="flex items-center gap-4 text-center md:text-left z-10">
-                <!-- Yin Yang / Fortune Wheel Icon -->
-                <div class="relative p-3 bg-gradient-to-br from-amber-500/20 to-red-900/40 border border-amber-500/40 rounded-2xl text-amber-400 shadow-inner group">
-                    <i data-lucide="sun-medium" class="w-9 h-9 animate-spin-slow text-amber-400"></i>
-                    <i data-lucide="sparkles" class="w-4 h-4 text-amber-300 absolute top-1 right-1"></i>
-                </div>
-                <div>
-                    <div class="flex items-center gap-2 justify-center md:justify-start">
-                        <span class="text-xs tracking-widest text-amber-400 uppercase font-semibold">金龍獻瑞 &bull; 萬福雲集</span>
-                        <span class="text-xs text-amber-500/60">&bull;</span>
-                        <span class="text-xs text-stone-400 font-serif">Feng Shui Multi-Stage Draw</span>
-                    </div>
-                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight gold-gradient-text font-serif">
-                        FORTUNE LUCKY DRAW
-                    </h1>
-                </div>
-            </div>
+    <!-- Custom IDs Settings Drawer (Collapsible) -->
+    <div id="pool-settings-drawer" class="hidden glass-red rounded-2xl p-4 border border-amber-500/30 w-full shrink-0">
+        <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-bold text-amber-300 flex items-center gap-2">
+                <i data-lucide="sliders" class="w-4 h-4"></i> Custom Participant Pool Input
+            </h3>
+            <button onclick="togglePoolSettings()" class="text-xs text-stone-400 hover:text-stone-200">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+        <p class="text-xs text-stone-300 mb-3">Paste participant IDs separated by commas or line breaks. Empty rows are
+            automatically filtered out.</p>
+        <textarea id="custom-ids-input" oninput="handleCustomInputLive()" rows="4"
+            class="w-full bg-stone-950 border border-amber-500/30 rounded-xl p-3 text-xs text-stone-200 font-mono focus:outline-none focus:border-amber-400"
+            placeholder="User1001&#10;User1002&#10;User1003..."></textarea>
+        <div class="flex justify-end gap-2 mt-3">
+            <button onclick="applyCustomPool()"
+                class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold rounded-xl text-xs transition-colors">
+                Apply Custom Pool
+            </button>
+        </div>
+    </div>
 
-            <!-- Feng Shui Pool Info - Single Total Users Joined Stat -->
-            <div class="flex items-center gap-3 bg-stone-950/80 p-3 px-6 rounded-2xl border border-amber-500/30 text-xs sm:text-sm z-10">
-                <div class="text-center px-2">
-                    <p class="text-stone-400 font-medium tracking-wide">Total Users Joined</p>
-                    <p id="stat-pool" class="font-bold text-amber-300 text-lg sm:text-xl">1,000</p>
-                </div>
-            </div>
-        </header>
+    <!-- Main Content Area: Dynamic Full Size Layout -->
+    <main class="w-full flex-1 flex flex-col grid-cols-1 gap-6">
+        <section
+            class="w-full glass-red rounded-3xl p-4 sm:p-6 flex flex-col flex-1 border border-amber-500/30 min-h-[500px]">
 
-        <!-- Reward Stage Navigation Bar -->
-        <nav class="glass-red rounded-2xl p-3 border border-amber-500/30 flex flex-wrap items-center justify-between gap-3 shadow-xl">
-            <div class="flex items-center gap-2 overflow-x-auto py-1 max-w-full" id="reward-pills-container">
-                <!-- Reward Pills injected by JS -->
-            </div>
-            
-            <div class="flex items-center gap-2 ml-auto">
-                <button onclick="prevRewardTier()" class="px-3 py-1.5 bg-stone-900 hover:bg-stone-800 border border-amber-500/30 rounded-xl text-xs font-semibold text-amber-300 flex items-center gap-1 transition-colors">
-                    <i data-lucide="chevron-left" class="w-4 h-4"></i> Prev Tier
-                </button>
-                <button onclick="nextRewardTier()" class="px-4 py-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-bold rounded-xl text-xs flex items-center gap-1 shadow-lg transition-transform active:scale-95">
-                    Next Reward Screen <i data-lucide="chevron-right" class="w-4 h-4"></i>
-                </button>
-            </div>
-        </nav>
-
-        <!-- Main Content Area -->
-        <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 items-start">
-
-            <!-- Left Panel: Animation Wheel & Controls (5 cols) -->
-            <section class="lg:col-span-5 flex flex-col gap-6">
-
-                <!-- Animation Display Box -->
-                <div class="glass-red rounded-3xl p-6 sm:p-8 relative overflow-hidden flex flex-col items-center justify-center text-center shadow-2xl border border-amber-500/30">
-                    
-                    <!-- Decorative Corner Motifs -->
-                    <div class="lattice-corner top-3 left-3 border-t-2 border-l-2"></div>
-                    <div class="lattice-corner top-3 right-3 border-t-2 border-r-2"></div>
-                    <div class="lattice-corner bottom-3 left-3 border-b-2 border-l-2"></div>
-                    <div class="lattice-corner bottom-3 right-3 border-b-2 border-r-2"></div>
-
-                    <!-- Active Tier Indicator Badge -->
-                    <div id="active-reward-badge" class="text-xs font-semibold tracking-widest uppercase mb-2 px-4 py-1 rounded-full border bg-amber-500/10 border-amber-500/40 text-amber-300 flex items-center gap-2">
-                        <i data-lucide="crown" class="w-4 h-4 text-amber-400"></i>
-                        <span id="tier-display-name">Grand Prize Stage</span>
-                    </div>
-                    <p id="tier-display-desc" class="text-xs text-stone-400 mb-3 italic">Drawing for exclusive high-fortune awards</p>
-
-                    <!-- Slot Animation Box -->
-                    <div id="slot-container" class="my-3 relative w-full py-8 bg-stone-950 rounded-2xl border border-amber-500/40 shadow-inner flex items-center justify-center overflow-hidden h-36">
-                        <!-- Golden Glow Frame -->
-                        <div class="absolute inset-x-0 h-12 bg-amber-500/10 pointer-events-none border-y border-amber-500/40"></div>
-
-                        <!-- ID Reel display -->
-                        <div id="slot-reel" class="text-4xl sm:text-5xl font-mono font-black tracking-widest text-amber-400 flex items-center justify-center animate-pulse-glow">
-                            1001
-                        </div>
-                    </div>
-
-                    <!-- Progress Status Bar -->
-                    <div class="w-full space-y-2 mb-6">
-                        <div class="flex justify-between text-xs text-stone-300 font-medium">
-                            <span id="status-text">Harmonizing pool... Ready!</span>
-                            <span id="progress-percent" class="text-amber-400">0 / 50</span>
-                        </div>
-                        <div class="w-full bg-stone-900 h-2.5 rounded-full overflow-hidden border border-amber-500/20">
-                            <div id="draw-progress" class="bg-gradient-to-r from-red-600 via-amber-500 to-emerald-400 h-full w-0 transition-all duration-100"></div>
-                        </div>
-                    </div>
-
-                    <!-- Main Action Button -->
-                    <button id="btn-spin" onclick="startLuckyDraw()" class="w-full group relative inline-flex items-center justify-center p-0.5 overflow-hidden rounded-2xl font-bold transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-amber-500/20">
-                        <span class="absolute inset-0 w-full h-full bg-gradient-to-r from-amber-400 via-red-600 to-amber-500 rounded-2xl"></span>
-                        <span class="relative w-full px-8 py-4 bg-stone-950 rounded-[14px] transition-all duration-200 ease-in group-hover:bg-opacity-0 flex items-center justify-center gap-3 text-lg text-amber-300 group-hover:text-stone-950">
-                            <i data-lucide="coins" class="w-6 h-6 text-amber-400 group-hover:text-stone-950 animate-bounce"></i>
-                            <span id="btn-text" class="tracking-wide">SPIN FOR 50 WINNERS</span>
-                        </span>
+            <!-- Header Action Controls -->
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-amber-500/20 pb-4">
+                <div class="flex items-center gap-2">
+                    <button onclick="generateDefaultPool()"
+                        class="py-2 px-3 bg-stone-900/90 hover:bg-stone-800 border border-amber-500/30 rounded-xl text-xs font-medium text-amber-300 flex items-center justify-center gap-2 transition-colors">
+                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                        Reset All Tiers & Pool
+                    </button>
+                    <button onclick="resetCurrentTierWinners()"
+                        class="py-2 px-3 bg-stone-900/90 hover:bg-stone-800 border border-red-500/30 rounded-xl text-xs font-medium text-rose-400 flex items-center justify-center gap-2 transition-colors">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        Clear Current Tier
                     </button>
                 </div>
+                <div class="flex items-center gap-4">
+                    <span class="text-xs text-amber-300/80">
+                        Eligible Pool: <strong id="stat-pool" class="text-amber-400 font-mono">1,000</strong>
+                    </span>
+                    <button onclick="togglePoolSettings()"
+                        class="text-xs text-amber-400 hover:text-amber-300 transition-colors underline flex items-center gap-1">
+                        <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Custom IDs / Batch
+                    </button>
+                </div>
+            </div>
 
-                <!-- Settings & Pool Controls -->
-                <div class="glass-red rounded-3xl p-5 space-y-4 border border-amber-500/30">
-                    <div class="flex items-center justify-between border-b border-amber-500/20 pb-3">
-                        <h2 class="font-bold text-stone-200 text-sm flex items-center gap-2">
-                            <i data-lucide="sliders-horizontal" class="w-4 h-4 text-amber-400"></i>
-                            Draw & Pool Settings
-                        </h2>
-                        <button onclick="togglePoolSettings()" class="text-xs text-amber-400 hover:text-amber-300 transition-colors underline">
-                            Custom IDs / Batch
-                        </button>
+            <!-- Single Row: Image Reward, Reel & Spin Controls Side-by-Side -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 w-full my-4 items-stretch">
+                <!-- Display Text Name Reward (Left Side) -->
+                <div id="reward-name-container"
+                    class="md:col-span-3 relative w-full p-4 bg-stone-950 rounded-2xl border border-amber-500/40 shadow-inner flex flex-col items-center justify-center min-h-[90px] sm:min-h-[100px] text-center overflow-hidden">
+                    <span class="text-[10px] uppercase font-bold tracking-widest text-amber-500/80 mb-1">Active
+                        Reward</span>
+                    <h3 id="reward-name-text"
+                        class="text-lg sm:text-xl font-serif font-black gold-gradient-text tracking-wide leading-tight">
+                        Grand Prize
+                    </h3>
+                </div>
+
+                <!-- ID Reel display (Center Side) -->
+                <div id="slot-container"
+                    class="md:col-span-5 relative w-full py-4 px-6 bg-stone-950 rounded-2xl border border-amber-500/40 shadow-inner flex items-center justify-center overflow-hidden min-h-[90px] sm:min-h-[100px]">
+                    <!-- Golden Glow Frame -->
+                    <div
+                        class="absolute inset-x-0 h-10 bg-amber-500/10 pointer-events-none border-y border-amber-500/40">
                     </div>
 
-                    <!-- Action Buttons -->
-                    <div class="grid grid-cols-2 gap-3">
-                        <button onclick="generateDefaultPool()" class="py-2.5 px-3 bg-stone-900/90 hover:bg-stone-800 border border-amber-500/30 rounded-xl text-xs font-medium text-amber-300 flex items-center justify-center gap-2 transition-colors">
-                            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-                            Reset All Tiers & Pool
-                        </button>
-                        <button onclick="resetCurrentTierWinners()" class="py-2.5 px-3 bg-stone-900/90 hover:bg-stone-800 border border-red-500/30 rounded-xl text-xs font-medium text-rose-400 flex items-center justify-center gap-2 transition-colors">
-                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                            Clear Current Tier
-                        </button>
-                    </div>
-
-                    <!-- Collapsible Input -->
-                    <div id="pool-settings-drawer" class="hidden space-y-3 pt-2 border-t border-amber-500/20">
-                        <div>
-                            <label class="block text-xs text-stone-300 mb-1">Custom User IDs (Line/Comma separated)</label>
-                            <textarea id="custom-ids-input" oninput="handleCustomInputLive()" rows="3" class="w-full bg-stone-950 border border-amber-500/30 rounded-xl p-3 text-xs text-stone-200 focus:outline-none focus:border-amber-400 font-mono resize-none" placeholder="1001&#10;1002..."></textarea>
-                        </div>
-                        <button onclick="applyCustomPool()" class="w-full py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-semibold rounded-xl transition-colors">
-                            Apply Custom IDs
-                        </button>
+                    <div id="slot-reel"
+                        class="text-3xl sm:text-4xl md:text-5xl font-mono font-black tracking-widest text-amber-400 flex items-center justify-center animate-pulse-glow z-10">
+                        Start Now
                     </div>
                 </div>
 
-            </section>
+                <!-- Spin Button (Right Side) -->
+                <button id="btn-spin" onclick="startLuckyDraw()"
+                    class="md:col-span-4 w-full group relative inline-flex items-center justify-center p-0.5 overflow-hidden rounded-2xl font-bold transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] shadow-xl shadow-amber-500/20 min-h-[90px] sm:min-h-[100px]">
+                    <span
+                        class="absolute inset-0 w-full h-full bg-gradient-to-r from-amber-400 via-red-600 to-amber-500 rounded-2xl"></span>
+                    <span
+                        class="relative w-full h-full px-4 py-4 bg-stone-950 rounded-[14px] transition-all duration-200 ease-in group-hover:bg-opacity-0 flex items-center justify-center gap-2 text-sm sm:text-base md:text-lg text-amber-300 group-hover:text-stone-950 text-center">
+                        <i data-lucide="coins"
+                            class="w-5 h-5 shrink-0 text-amber-400 group-hover:text-stone-950 animate-bounce"></i>
+                        <span id="btn-text" class="tracking-wide leading-tight">SPIN FOR 50 WINNERS</span>
+                    </span>
+                </button>
+            </div>
 
-            <!-- Right Panel: Winner Showcase Grid (7 cols) -->
-            <section class="lg:col-span-7 glass-red rounded-3xl p-6 flex flex-col h-[640px] border border-amber-500/30">
-
-                <!-- Winner Panel Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-amber-500/20">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 bg-amber-500/20 border border-amber-500/40 rounded-xl text-amber-400">
-                            <i data-lucide="trophy" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <h2 class="font-bold text-stone-100 font-serif" id="winners-panel-title">Grand Prize Winners</h2>
-                            <p class="text-xs text-stone-400" id="winner-count-subtitle">0 winners selected for this stage</p>
-                        </div>
-                    </div>
-
-                    <!-- Search & Tools -->
-                    <div class="flex items-center gap-2">
-                        <div class="relative flex-1 sm:flex-none">
-                            <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"></i>
-                            <input type="text" id="search-input" onkeyup="filterWinners()" placeholder="Filter ID..." class="w-full sm:w-28 bg-stone-950 border border-amber-500/30 rounded-xl pl-8 pr-3 py-1.5 text-xs text-stone-200 focus:outline-none focus:border-amber-400">
-                        </div>
-                        
-                        <button onclick="copyWinnersToClipboard()" title="Copy to Clipboard" class="p-2 bg-stone-900 hover:bg-stone-800 border border-amber-500/30 rounded-xl text-amber-300 transition-colors">
-                            <i data-lucide="copy" class="w-4 h-4"></i>
-                        </button>
-                        
-                        <button onclick="exportWinnersCSV()" title="Export CSV" class="p-2 bg-stone-900 hover:bg-stone-800 border border-amber-500/30 rounded-xl text-emerald-400 transition-colors">
-                            <i data-lucide="download" class="w-4 h-4"></i>
-                        </button>
+            <!-- Progress Bar Section -->
+            <div class="w-full space-y-2 mb-4">
+                <div class="flex justify-between text-xs text-stone-300 font-medium">
+                    <span id="status-text">Harmonizing pool... Ready!</span>
+                    <span id="progress-percent" class="text-amber-400 font-mono">0 / 50</span>
+                </div>
+                <div class="w-full bg-stone-900 h-3 rounded-full overflow-hidden border border-amber-500/20">
+                    <div id="draw-progress"
+                        class="bg-gradient-to-r from-red-600 via-amber-500 to-emerald-400 h-full w-0 transition-all duration-100">
                     </div>
                 </div>
+            </div>
 
-                <!-- Winners Grid -->
-                <div id="winners-container" class="flex-1 overflow-y-auto my-4 pr-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5 content-start">
-                    <!-- Empty State -->
-                    <div id="empty-state" class="col-span-full h-full flex flex-col items-center justify-center text-stone-500 space-y-3 py-16">
-                        <div class="p-4 bg-stone-900/60 rounded-full border border-amber-500/20">
-                            <i data-lucide="sparkles" class="w-10 h-10 text-amber-500/40"></i>
-                        </div>
-                        <p class="text-sm font-medium text-stone-400">No winners drawn for this stage yet.</p>
-                        <p class="text-xs text-stone-500 max-w-xs text-center">Press "SPIN" to pick winners for the active reward screen!</p>
+            <!-- Winner Panel Header -->
+            <div
+                class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-amber-500/20">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-amber-500/20 border border-amber-500/40 rounded-xl text-amber-400">
+                        <i data-lucide="trophy" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-stone-100 font-serif text-lg" id="winners-panel-title">Grand Prize
+                            Winners</h2>
+                        <p class="text-xs text-stone-400" id="winner-count-subtitle">0 winners selected for this stage
+                        </p>
                     </div>
                 </div>
 
-                <!-- Footer Stats -->
-                <div class="pt-3 border-t border-amber-500/20 flex items-center justify-between text-xs text-stone-400">
-                    <span id="batch-target-info">Batch Target: 50 Users / Spin</span>
-                    <span id="timestamp-info">System Ready</span>
+                <!-- Search & Copy/Export Tools -->
+                <div class="flex items-center gap-2">
+                    <div class="relative flex-1 sm:flex-none">
+                        <i data-lucide="search"
+                            class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"></i>
+                        <input type="text" id="search-input" onkeyup="filterWinners()" placeholder="Filter ID..."
+                            class="w-full sm:w-36 bg-stone-950 border border-amber-500/30 rounded-xl pl-8 pr-3 py-2 text-xs text-stone-200 focus:outline-none focus:border-amber-400">
+                    </div>
+
+                    <button onclick="copyWinnersToClipboard()" title="Copy to Clipboard"
+                        class="p-2 bg-stone-900 hover:bg-stone-800 border border-amber-500/30 rounded-xl text-amber-300 transition-colors">
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                    </button>
+
+                    <button onclick="exportWinnersCSV()" title="Export CSV"
+                        class="p-2 bg-stone-900 hover:bg-stone-800 border border-amber-500/30 rounded-xl text-emerald-400 transition-colors">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                    </button>
                 </div>
+            </div>
 
-            </section>
+            <!-- Dynamic Fluid Winners Grid (Full Height Expansion) -->
+            <div id="winners-container"
+                class="flex-1 overflow-y-auto my-4 pr-1 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2.5 content-start min-h-[220px]">
+                <!-- Empty State -->
+                <div id="empty-state"
+                    class="col-span-full h-full flex flex-col items-center justify-center text-stone-500 space-y-3 py-12">
+                    <div class="p-4 bg-stone-900/60 rounded-full border border-amber-500/20">
+                        <i data-lucide="sparkles" class="w-10 h-10 text-amber-500/40"></i>
+                    </div>
+                    <p class="text-sm font-medium text-stone-400">No winners drawn for this stage yet.</p>
+                    <p class="text-xs text-stone-500 max-w-xs text-center">Press "SPIN" to pick winners for the active
+                        reward screen!</p>
+                </div>
+            </div>
 
-        </main>
+            <!-- Footer Stats -->
+            <div
+                class="pt-3 border-t border-amber-500/20 flex items-center justify-between text-xs text-stone-400 shrink-0">
+                <span id="batch-target-info">Batch Target: 50 Users / Spin</span>
+                <span id="timestamp-info">System Ready</span>
+            </div>
 
-        <!-- Footer -->
-        <footer class="text-center text-xs text-stone-500 py-2">
-            Feng Shui Fortune Selector &bull; Multi-Stage Prosperity & Good Luck
-        </footer>
-
-    </div>
+        </section>
+    </main>
 
     <script>
         const REWARD_TIERS = [
-            { id: 'grand', name: 'Grand Prize', count: 50, icon: 'crown', color: 'from-amber-400 to-amber-600', desc: 'Ultimate Feng Shui Prosperity Award (50 Winner)' },
-            { id: 'first', name: '1st Prize', count: 30, icon: 'medal', color: 'from-red-500 to-amber-500', desc: 'First Class Fortune Reward (30 Winners)' },
-            { id: 'second', name: '2nd Prize', count: 15, icon: 'award', color: 'from-amber-500 to-emerald-500', desc: 'Second Rank Golden Wealth 15 Winners)' },
-            { id: 'third', name: '20th Prize', count: 10, icon: 'gift', color: 'from-emerald-400 to-teal-600', desc: 'Third Rank Good Luck Prize (10 Winners)' },
-            { id: 'lucky', name: 'Lucky Prizes', count: 5, icon: 'sparkles', color: 'from-yellow-400 to-amber-500', desc: 'Harmony & Joy Lucky Draw Batch (5 Winners)' }
+            { id: 'appdaily', name: 'APP MyDestiny Daily', count: 50, icon: 'crown', color: 'from-amber-400 to-amber-600', desc: 'Ultimate Feng Shui Prosperity Award (50 Winners)' },
+            { id: 'appweekly', name: 'APP MyDestiny Weekly', count: 30, icon: 'medal', color: 'from-red-500 to-amber-500', desc: 'First Class Fortune Reward (30 Winners)' },
+            { id: 'appmonthly', name: 'APP MyDestiny Monthly', count: 15, icon: 'award', color: 'from-amber-500 to-emerald-500', desc: 'Second Rank Golden Wealth (15 Winners)' },
+            { id: 'appyearly', name: 'APP MyDestiny Yearly', count: 10, icon: 'gift', color: 'from-emerald-400 to-teal-600', desc: 'Third Rank Good Luck Prize (10 Winners)' },
+            { id: 'books', name: 'សៀវភៅយុគ9', count: 5, icon: 'sparkles', color: 'from-yellow-400 to-amber-500', desc: 'Harmony & Joy Lucky Draw Batch (5 Winners)' },
+            { id: 'seebazi', name: 'មើលប៉ាជី១៥%', count: 4, icon: 'star', color: 'from-amber-400 to-yellow-600', desc: 'Special Stellar Blessing Batch (4 Winners)' },
+            { id: 'seeface', name: 'មើលងុវហេង១០%', count: 3, icon: 'zap', color: 'from-yellow-500 to-red-500', desc: 'Radiant Energy Fortune Batch (3 Winners)' },
+            { id: 'lucky', name: 'ហុងស៊ុយផ្ទះ៥%', count: 2, icon: 'flame', color: 'from-orange-400 to-amber-600', desc: 'Dual Dragon Prosperity Batch (2 Winners)' },
+            { id: 'supreme', name: 'ដួងកែវកំណើត', count: 1, icon: 'shield-alert', color: 'from-red-600 to-amber-500', desc: 'The Ultimate Solo Grand Sovereign Reward (1 Winner)' }
         ];
+
+        // REWARD_TIERS is the single source of truth for all reward stages.
+        // When adding a tier to REWARD_TIERS, its winner list is created automatically.
+        function validateRewardTiers() {
+            if (!Array.isArray(REWARD_TIERS) || REWARD_TIERS.length === 0) {
+                throw new Error('REWARD_TIERS must contain at least one reward tier.');
+            }
+
+            const seenIds = new Set();
+
+            REWARD_TIERS.forEach((tier, index) => {
+                if (!tier || typeof tier !== 'object') {
+                    throw new Error(`Invalid reward tier at index ${index}.`);
+                }
+
+                if (typeof tier.id !== 'string' || !tier.id.trim()) {
+                    throw new Error(`Reward tier at index ${index} must have a non-empty string id.`);
+                }
+
+                if (seenIds.has(tier.id)) {
+                    throw new Error(`Duplicate reward tier id: "${tier.id}". Every tier must have a unique id.`);
+                }
+                seenIds.add(tier.id);
+
+                if (!Number.isInteger(tier.count) || tier.count < 1) {
+                    throw new Error(`Reward tier "${tier.id}" must have a positive whole-number count.`);
+                }
+
+                if (!tier.name) {
+                    throw new Error(`Reward tier "${tier.id}" must have a name.`);
+                }
+            });
+        }
+
+        function createEmptyWinnersByTier() {
+            return Object.fromEntries(REWARD_TIERS.map(tier => [tier.id, []]));
+        }
+
+        function ensureWinnersByTier() {
+            if (!winnersByTier || typeof winnersByTier !== 'object') {
+                winnersByTier = {};
+            }
+
+            REWARD_TIERS.forEach(tier => {
+                if (!Array.isArray(winnersByTier[tier.id])) {
+                    winnersByTier[tier.id] = [];
+                }
+            });
+        }
+
+        validateRewardTiers();
 
         let currentTierIndex = 0;
         let batchSize = REWARD_TIERS[0].count;
 
         let participantPool = [];
-        let winnersByTier = {
-            grand: [],
-            first: [],
-            second: [],
-            third: [],
-            lucky: []
-        };
+        let winnersByTier = createEmptyWinnersByTier();
 
         let isSpinning = false;
 
-        window.onload = function() {
+        // Optional helper for adding a tier at runtime. For normal setup,
+        // simply add the tier object to REWARD_TIERS above before the page loads.
+        function addRewardTier(tier) {
+            if (isSpinning) {
+                showToast('Cannot add a reward while the draw is running.', 'alert-triangle', 'error');
+                return false;
+            }
+
+            if (!tier || typeof tier.id !== 'string' || !tier.id.trim() ||
+                !tier.name || !Number.isInteger(tier.count) || tier.count < 1) {
+                showToast('Invalid reward tier configuration.', 'alert-triangle', 'error');
+                return false;
+            }
+
+            if (REWARD_TIERS.some(existing => existing.id === tier.id)) {
+                showToast(`Reward ID "${tier.id}" already exists.`, 'alert-triangle', 'error');
+                return false;
+            }
+
+            REWARD_TIERS.push({
+                icon: 'gift',
+                color: 'from-amber-400 to-amber-600',
+                desc: '',
+                ...tier
+            });
+            winnersByTier[tier.id] = [];
+            renderRewardPills();
+            updateStatsUI();
+            showToast(`Added ${tier.name}`, 'check');
+            return true;
+        }
+
+        window.onload = function () {
             lucide.createIcons();
             generateDefaultPool();
             renderRewardPills();
+
+            // Listen for fullscreen change to update toggle button text/icon
+            document.addEventListener('fullscreenchange', updateFullScreenButtonState);
+            document.addEventListener('webkitfullscreenchange', updateFullScreenButtonState);
         };
+
+        /* Browser Full Screen API Logic */
+        function toggleFullScreen() {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                const docEl = document.documentElement;
+                if (docEl.requestFullscreen) {
+                    docEl.requestFullscreen();
+                } else if (docEl.webkitRequestFullscreen) {
+                    docEl.webkitRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                }
+            }
+        }
+
+        function updateFullScreenButtonState() {
+            const isFS = !!(document.fullscreenElement || document.webkitFullscreenElement);
+            const btnText = document.getElementById('fullscreen-text');
+            const btnIcon = document.getElementById('fullscreen-icon');
+
+            if (isFS) {
+                btnText.innerText = "Exit Full Screen";
+                btnIcon.setAttribute('data-lucide', 'minimize');
+            } else {
+                btnText.innerText = "Full Screen";
+                btnIcon.setAttribute('data-lucide', 'maximize');
+            }
+            lucide.createIcons();
+        }
 
         function parseIdsFromInput(rawText) {
             return rawText
@@ -381,20 +486,20 @@
         }
 
         function renderRewardPills() {
+            ensureWinnersByTier();
             const container = document.getElementById('reward-pills-container');
             container.innerHTML = '';
 
             REWARD_TIERS.forEach((tier, index) => {
                 const isActive = index === currentTierIndex;
                 const count = winnersByTier[tier.id] ? winnersByTier[tier.id].length : 0;
-                
+
                 const pill = document.createElement('button');
                 pill.onclick = () => switchRewardTier(index);
-                pill.className = `px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border whitespace-nowrap ${
-                    isActive 
-                    ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 border-amber-300 shadow-md scale-105' 
+                pill.className = `px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border whitespace-nowrap ${isActive
+                    ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 border-amber-300 shadow-md scale-105'
                     : 'bg-stone-950/80 text-stone-300 border-amber-500/20 hover:border-amber-500/40 hover:text-amber-300'
-                }`;
+                    }`;
 
                 pill.innerHTML = `
                     <i data-lucide="${tier.icon}" class="w-3.5 h-3.5"></i>
@@ -445,15 +550,12 @@
         function updateActiveTierUI() {
             const currentTier = REWARD_TIERS[currentTierIndex];
             batchSize = currentTier.count;
-
-            const nameEl = document.getElementById('tier-display-name');
-            const descEl = document.getElementById('tier-display-desc');
+            const rewardNameTextEl = document.getElementById('reward-name-text');
+            if (rewardNameTextEl) rewardNameTextEl.innerText = currentTier.name;
             const titleEl = document.getElementById('winners-panel-title');
             const btnTextEl = document.getElementById('btn-text');
             const targetInfoEl = document.getElementById('batch-target-info');
 
-            if (nameEl) nameEl.innerText = currentTier.name;
-            if (descEl) descEl.innerText = currentTier.desc;
             if (titleEl) titleEl.innerText = `${currentTier.name} Winners`;
             if (btnTextEl) btnTextEl.innerText = `SPIN FOR ${batchSize} WINNER${batchSize > 1 ? 'S' : ''} (${currentTier.name.toUpperCase()})`;
             if (targetInfoEl) targetInfoEl.innerText = `Reward Target: ${batchSize} User${batchSize > 1 ? 's' : ''} / Spin`;
@@ -465,12 +567,15 @@
             for (let i = 1; i <= 1000; i++) {
                 participantPool.push((1000 + i).toString());
             }
-            
-            winnersByTier = { grand: [], first: [], second: [], third: [], lucky: [] };
+
+            // Reset every configured reward tier, including tiers added later.
+            winnersByTier = createEmptyWinnersByTier();
+            currentTierIndex = 0;
+            batchSize = REWARD_TIERS[currentTierIndex].count;
             updateStatsUI();
             renderRewardPills();
             renderWinners();
-            showToast('Reset pool to 1,000 User IDs across all tiers', 'refresh-cw');
+            showToast('Reset pool to 1,000 User IDs across all tiers', 'rotate-ccw');
             document.getElementById('custom-ids-input').value = participantPool.join('\n');
         }
 
@@ -486,13 +591,12 @@
             const parsedIds = parseIdsFromInput(rawText);
 
             if (parsedIds.length > 0) {
-                // Exclude already won user IDs across all tiers
                 const allPreviousWinners = Object.values(winnersByTier).flat();
                 participantPool = [...new Set(parsedIds)].filter(id => !allPreviousWinners.includes(id));
             }
 
             if (participantPool.length < batchSize) {
-                showToast(`Warning: Pool size (${participantPool.length}) is smaller than current reward spin target (${batchSize})`, 'alert-triangle', 'error');
+                showToast(`Warning: Pool size (${participantPool.length}) is smaller than spin target (${batchSize})`, 'alert-triangle', 'error');
             } else {
                 showToast(`Updated! Active Pool: ${participantPool.length} Users`, 'check');
             }
@@ -506,7 +610,6 @@
             const activeTierId = REWARD_TIERS[currentTierIndex].id;
             const currentWinners = winnersByTier[activeTierId] || [];
 
-            // Return cleared winners back to eligible pool
             participantPool.push(...currentWinners);
             winnersByTier[activeTierId] = [];
 
@@ -517,26 +620,30 @@
         }
 
         function getAllWinnersList() {
-            return Object.values(winnersByTier).flat();
+            ensureWinnersByTier();
+            return REWARD_TIERS.flatMap(tier => winnersByTier[tier.id]);
         }
 
         function updateStatsUI() {
-            const totalWinnersCount = getAllWinnersList().length;
-            const totalUsersJoined = participantPool.length + totalWinnersCount;
+            ensureWinnersByTier();
             const currentTierCount = winnersByTier[REWARD_TIERS[currentTierIndex].id].length;
 
             const statPool = document.getElementById('stat-pool');
             const winnerCountSubtitle = document.getElementById('winner-count-subtitle');
 
-            if (statPool) statPool.innerText = totalUsersJoined.toLocaleString();
-            if (winnerCountSubtitle) winnerCountSubtitle.innerText = `${currentTierCount} winners in ${REWARD_TIERS[currentTierIndex].name}`;
+            if (statPool) statPool.innerText = participantPool.length.toLocaleString();
+            if (winnerCountSubtitle) winnerCountSubtitle.innerText = `${currentTierCount} winners drawn for ${REWARD_TIERS[currentTierIndex].name}`;
         }
 
         async function startLuckyDraw() {
             if (isSpinning) return;
 
+            ensureWinnersByTier();
+            const currentTier = REWARD_TIERS[currentTierIndex];
+            batchSize = currentTier.count;
+
             if (participantPool.length < batchSize) {
-                showToast(`Not enough participants left! Need at least ${batchSize} IDs in pool.`, 'alert-triangle', 'error');
+                showToast(`Not enough participants! Need at least ${batchSize} IDs in pool.`, 'alert-triangle', 'error');
                 return;
             }
 
@@ -548,13 +655,11 @@
             const progressPercent = document.getElementById('progress-percent');
             const statusText = document.getElementById('status-text');
 
-            const currentTier = REWARD_TIERS[currentTierIndex];
             statusText.innerText = `Drawing ${batchSize} winners for ${currentTier.name}...`;
 
             const newWinnersBatch = [];
             let duration = 3000;
 
-            // Randomize all 4 digits continuously during the spinning state
             const reelInterval = setInterval(() => {
                 const random4Digit = Math.floor(1000 + Math.random() * 9000).toString();
                 slotReel.innerText = random4Digit;
@@ -614,9 +719,9 @@
         }
 
         function renderWinners(recentBatch = []) {
+            ensureWinnersByTier();
             const container = document.getElementById('winners-container');
             const emptyState = document.getElementById('empty-state');
-
             const activeTier = REWARD_TIERS[currentTierIndex];
             const displayList = (winnersByTier[activeTier.id] || []).map(id => ({ id, tierName: activeTier.name }));
 
@@ -628,28 +733,54 @@
             }
 
             container.innerHTML = '';
+            const totalCount = displayList.length;
+
+            let gridColsClass = 'grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10';
+            let cardPadding = 'p-2.5';
+            let rankFontSize = 'text-[9px]';
+            let idFontSize = 'text-xs sm:text-sm';
+            let cardMinHeight = 'min-h-[60px]';
+
+            if (totalCount <= 5) {
+                // Large box layout for <= 5 winners
+                gridColsClass = `grid-cols-${totalCount} sm:grid-cols-${totalCount}`;
+                cardPadding = 'p-6 sm:p-8';
+                rankFontSize = 'text-xs sm:text-sm font-bold px-3 py-1';
+                idFontSize = 'text-2xl sm:text-4xl md:text-5xl';
+                cardMinHeight = 'min-h-[140px] sm:min-h-[180px]';
+            } else if (totalCount <= 10) {
+                // Medium layout for 6-10 winners
+                gridColsClass = 'grid-cols-2 sm:grid-cols-5';
+                cardPadding = 'p-4 sm:p-6';
+                rankFontSize = 'text-xs px-2 py-0.5';
+                idFontSize = 'text-xl sm:text-2xl md:text-3xl';
+                cardMinHeight = 'min-h-[100px] sm:min-h-[120px]';
+            }
+
+            container.className = `flex-1 overflow-y-auto my-4 pr-1 grid ${gridColsClass} gap-3 sm:gap-4 content-center min-h-[220px]`;
 
             displayList.forEach((item, index) => {
                 const isNew = recentBatch.includes(item.id);
                 const card = document.createElement('div');
-                card.className = `winner-card p-2.5 rounded-2xl border text-center transition-all flex flex-col justify-center items-center relative overflow-hidden ${
-                    isNew 
-                    ? 'bg-gradient-to-b from-amber-500/20 via-red-900/30 to-stone-950 border-amber-400 shadow-md shadow-amber-500/10' 
+                card.className = `winner-card ${cardPadding} ${cardMinHeight} rounded-2xl border text-center transition-all flex flex-col justify-center items-center relative overflow-hidden shadow-lg ${isNew
+                    ? 'bg-gradient-to-b from-amber-500/20 via-red-900/30 to-stone-950 border-amber-400 shadow-amber-500/20 ring-2 ring-amber-400/50'
                     : 'bg-stone-900/80 border-amber-500/20 hover:border-amber-500/40'
-                }`;
+                    }`;
 
                 const rankNum = displayList.length - index;
 
                 card.innerHTML = `
-                    <div class="flex items-center gap-1 mb-1">
-                        <span class="text-[9px] font-mono font-semibold px-1.5 py-0.2 rounded-full ${isNew ? 'bg-amber-400/20 text-amber-300' : 'bg-stone-800 text-stone-400'}">
-                            #${rankNum}
-                        </span>
-                    </div>
-                    <span class="font-mono font-extrabold text-xs sm:text-sm ${isNew ? 'text-amber-300' : 'text-stone-200'}">
-                        ${item.id}
-                    </span>
-                `;
+            <div class="flex items-center gap-1 mb-2">
+                <span class="${rankFontSize} font-mono font-semibold rounded-full ${isNew ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40' : 'bg-stone-800 text-stone-400'
+                    }">
+                    #${rankNum}
+                </span>
+            </div>
+            <span class="font-mono font-extrabold ${idFontSize} tracking-wider ${isNew ? 'text-amber-300 drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]' : 'text-stone-100'
+                    }">
+                ${item.id}
+            </span>
+        `;
 
                 container.appendChild(card);
             });
@@ -681,7 +812,7 @@
             textarea.style.opacity = '0';
             document.body.appendChild(textarea);
             textarea.select();
-            
+
             try {
                 document.execCommand('copy');
                 showToast(`Copied ${listToCopy.length} winning IDs!`, 'copy');
@@ -693,6 +824,7 @@
         }
 
         function exportWinnersCSV() {
+            ensureWinnersByTier();
             const totalWinners = getAllWinnersList();
             if (totalWinners.length === 0) {
                 showToast('No winners to export!', 'alert-circle', 'error');
@@ -700,7 +832,7 @@
             }
 
             let csvContent = "data:text/csv;charset=utf-8,Reward Stage,Rank,Winner ID\n";
-            
+
             REWARD_TIERS.forEach(t => {
                 const tierWinners = winnersByTier[t.id] || [];
                 tierWinners.forEach((id, idx) => {
@@ -716,7 +848,7 @@
             link.click();
             document.body.removeChild(link);
 
-            showToast('Exported CSV for all reward tiers!', 'file-text');
+            showToast('Exported CSV for all reward tiers!', 'download');
         }
 
         // Feng Shui Red & Golden Glitter Confetti
@@ -744,7 +876,7 @@
 
             toastMessage.innerText = message;
             toastIcon.setAttribute('data-lucide', iconName);
-            
+
             toastIcon.className = (type === 'error') ? "w-5 h-5 text-rose-400" : "w-5 h-5 text-emerald-400";
 
             lucide.createIcons();
@@ -759,4 +891,5 @@
         }
     </script>
 </body>
+
 </html>
